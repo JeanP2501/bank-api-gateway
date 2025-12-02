@@ -1,0 +1,68 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # Customer Service Routes
+        - id: customer-service
+          uri: lb://customer
+          predicates:
+            - Path=/customer/**
+          filters:
+            - StripPrefix=1
+
+        # Account Service Routes
+        - id: account-service
+          uri: lb://account
+          predicates:
+            - Path=/account/**
+          filters:
+            - StripPrefix=1
+
+        # Credit Service Routes
+        - id: credit-service
+          uri: lb://credit
+          predicates:
+            - Path=/credit/**
+          filters:
+            - StripPrefix=1
+
+        # Transaction Service Routes
+        - id: transaction-service
+          uri: lb://transaction
+          predicates:
+            - Path=/transaction/**
+          filters:
+            - StripPrefix=1
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,routes
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
