@@ -43,6 +43,14 @@ spring:
           filters:
             - StripPrefix=1
 
+        # Catalogs Service Routes
+        - id: catalog-service
+          uri: lb://catalogs
+          predicates:
+            - Path=/catalogs/**
+          filters:
+            - StripPrefix=1
+
 eureka:
   client:
     service-url:
